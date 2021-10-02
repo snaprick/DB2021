@@ -14,10 +14,10 @@ order by name;
 --b
 select distinct i_id
 from advisor
-where advisor.s_id in (
+where s_id in (
         select id
         from takes
-        where grade not in ('A','A-','B')
+        where grade not in ('A','A-','B+','B')
     );
 --c
 select distinct dept_name
