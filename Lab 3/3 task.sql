@@ -15,33 +15,27 @@ where instructor.id = advisor.i_id
   and takes.grade not in ('A','A-','B')
 group by instructor.name, instructor.id;
 --c
-select department.dept_name from department, course, takes
-where department.dept_name = course.dept_name and course.course_id = takes.course_id
-and department.dept_name not in (
-        select department.dept_name
-        from department, course, takes
-        where department.dept_name = course.dept_name and course.course_id = takes.course_id
+select course.dept_name from course, takes
+where course.course_id = takes.course_id
+and course.dept_name not in (
+        select course.dept_name
+        from course, takes
+        where course.course_id = takes.course_id
         and takes.grade in ('F','C')
     )
-group by department.dept_name;
+group by course.dept_name;
 --d
-select instructor.id
-from instructor,teaches,takes
-where instructor.id = teaches.id
-  and teaches.course_id = takes.course_id
-  and teaches.sec_id = takes.sec_id
-  and teaches.year = takes.year
-  and instructor.id not in(
-    select instructor.id
-    from instructor,teaches,takes
-    where instructor.id = teaches.id
-      and teaches.course_id = takes.course_id
+select id
+from teaches
+where id not in(
+    select teaches.id
+    from teaches,takes
+    where teaches.course_id = takes.course_id
       and teaches.sec_id = takes.sec_id
       and teaches.year = takes.year
       and takes.grade = 'A'
     )
-group by instructor.id
-;
+group by id;
 --e
 select course_id,title
 from course
