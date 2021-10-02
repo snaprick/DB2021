@@ -29,22 +29,24 @@ having count(*) =
        );
 
 --d
-select takes.id,student.name, count(takes.id) as count
+select student.id,student.name, count(takes.id) as count
 from takes,student, course
 where takes.id = student.id and takes.course_id=course.course_id
 and course.dept_name = 'Comp. Sci.'
-group by takes.id, student.name
+group by student.id, student.name
 having count(*) > 3;
 --e
 select * from instructor
 where dept_name in ('Music','Biology','Philosophy');
 --f
-select distinct instructor.id,name
-from instructor, teaches
-where instructor.id = teaches.id
-and teaches.year=2018 and instructor.name not in(
-    select instructor.name
-    from instructor, teaches
-    where instructor.id = teaches.id
-    and teaches.year = 2017
+select distinct id,name
+from instructor
+where id in (
+        select id
+        from teaches
+        where year=2018 and id not in(
+                select id
+                from teaches
+                where year = 2017
+            )
     );

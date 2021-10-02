@@ -1,49 +1,55 @@
 --a
-select distinct student.id, name
-from takes, course, student
-where takes.course_id = course.course_id
-  and takes.id = student.id
-  and course.dept_name = 'Comp. Sci.'
-  and grade in('A','A-')
+select distinct id, name
+from student
+where id in (
+        select id
+        from takes
+        where grade in('A','A-') and course_id in(
+                select course_id
+                from course
+                where course.dept_name = 'Comp. Sci.'
+            )
+    )
 order by name;
 --b
-select instructor.name, instructor.id
-from instructor, advisor, student, takes
-where instructor.id = advisor.i_id
-  and advisor.s_id = student.id
-  and student.id = takes.id
-  and takes.grade not in ('A','A-','B')
-group by instructor.name, instructor.id;
+select distinct i_id
+from advisor
+where advisor.s_id in (
+        select id
+        from takes
+        where grade not in ('A','A-','B')
+    );
 --c
-select course.dept_name from course, takes
-where course.course_id = takes.course_id
-and course.dept_name not in (
-        select course.dept_name
-        from course, takes
-        where course.course_id = takes.course_id
-        and takes.grade in ('F','C')
-    )
-group by course.dept_name;
+select distinct dept_name
+from course
+where dept_name not in (
+        select dept_name
+        from course
+        where course_id in(
+            select course_id
+            from takes
+            where takes.grade in ('F','C')
+            )
+    );
 --d
-select id
+select distinct id
 from teaches
 where id not in(
     select teaches.id
-    from teaches,takes
-    where teaches.course_id = takes.course_id
-      and teaches.sec_id = takes.sec_id
-      and teaches.year = takes.year
-      and takes.grade = 'A'
-    )
-group by id;
+    from teaches
+    where (course_id,sec_id,year) in (
+            select course_id,sec_id,year
+            from takes
+            where grade = 'A'
+        )
+    );
 --e
 select course_id,title
 from course
 where course_id in (
         select course_id
-        from section, time_slot
-        where section.time_slot_id = time_slot.time_slot_id
-        and time_slot.time_slot_id in (
+        from section
+        where time_slot_id  in (
             select distinct time_slot_id
             from time_slot
             where time_slot_id not in (
