@@ -2,11 +2,11 @@
 CREATE or REPLACE FUNCTION a(x integer)
 RETURNS integer AS
     $$
-        BEGIN
+        begin
         return x+1;
-    END;
+        end;
     $$
-LANGUAGE 'plpgsql';
+language 'plpgsql';
 
 select a(5);
 drop function a;
@@ -14,11 +14,11 @@ drop function a;
 CREATE or REPLACE FUNCTION b(a integer,b integer)
 returns integer as
     $$
-        BEGIN
+        begin
             return a+b;
         end
     $$
-LANGUAGE 'plpgsql';
+language 'plpgsql';
 
 select b(1,2);
 drop function b;
@@ -26,11 +26,11 @@ drop function b;
 CREATE or replace FUNCTION c(x integer)
 returns boolean AS
     $$
-        BEGIN
+        begin
             return x % 2 = 0;
         end;
     $$
-LANGUAGE 'plpgsql';
+language 'plpgsql';
 
 select c(4);
 drop function c;
@@ -38,11 +38,11 @@ drop function c;
 CREATE or replace FUNCTION d(x text)
 returns boolean as
     $$
-        BEGIN
+        begin
             return exists(select REGEXP_MATCHES(x,'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$'));
         end;
     $$
-LANGUAGE 'plpgsql';
+language 'plpgsql';
 
 select d('1234567c');
 drop function d;
@@ -54,7 +54,7 @@ create function e(a integer,out b varchar,out c varchar) as
         c=a*2;
     end;
     $$
-    language  'plpgsql';
+language  'plpgsql';
 select * from e(1);
 drop function e;
 -- 2 task
@@ -70,7 +70,7 @@ CREATE table people(
 CREATE or replace FUNCTION ins_time()
 returns trigger AS
     $$
-        BEGIN
+        begin
             new.time = now();
             return new;
         end;
@@ -88,7 +88,7 @@ drop trigger calc_time on people;
 create or replace FUNCTION age()
 returns trigger AS
     $$
-        BEGIN
+        begin
             new.age = date_part('year', age(new.date_of_birth));
             return new;
         end;
@@ -109,7 +109,7 @@ CREATE table product(
 create or replace FUNCTION price()
 returns trigger as
     $$
-        BEGIN
+        begin
             update product
             set price=price+0.12*price
             where id = new.id;
@@ -175,7 +175,7 @@ drop trigger test1 on test;
 -- Procedures are basic PL SQL blocks to perform a specific action.Procedures will not return the value
 -- Functions are blocks used mainly to perform the computations.Functions must return the value.
 -- 4 task
-Create table employee(
+create table employee(
     id int primary key,
     name varchar,
     date_of_birth date,
@@ -184,24 +184,25 @@ Create table employee(
     workexperience int,
     discount int
 );
+insert into employee values (1,'Yerlan','05-30-2002',19,10000,5,1);
 --4a
 CREATE or replace procedure salary1() as
 $$
-    Begin
+    begin
         update employee
         set salary = salary+ (workexperience/2)*0.1*salary,
-            discount = (workexperience/2)*0.1*employee.discount + employee.discount,
-            discount = (workexperience/5)*0.01 * employee.discount + employee.discount;
+            discount = (workexperience/2)*10 + employee.discount;
+         update employee set discount = (workexperience/5) + employee.discount;
         commit;
     end;
     $$
 language 'plpgsql';
 
-
+call salary1();
 -- 4b
-create or replace procedure sallary2() as
+create or replace procedure salary2() as
     $$
-        BEGIN
+        begin
             update employee
             set salary = salary*1.15
             where age >= 40;
@@ -213,7 +214,7 @@ create or replace procedure sallary2() as
         end;
     $$
 language 'plpgsql';
-
+call salary2();
 -- 5 task
 create table members(
     memid integer,
@@ -226,20 +227,15 @@ create table members(
     joindate timestamp
 );
 with recursive recommenders(recommender, member) as (
-	select recommendedby, memid
-		from members
+	select recommendedby, memid from members
 	union all
-	select mems.recommendedby, recs.member
-		from recommenders recs
-		inner join members mems
-			on mems.memid = recs.recommender
+	select members.recommendedby, recommenders.member
+	from recommenders inner join members on members.memid = recommenders.recommender
 )
-select recs.member member, recs.recommender, mems.firstname, mems.surname
-	from recommenders recs
-	inner join members mems
-		on recs.recommender = mems.memid
-	where recs.member = 22 or recs.member = 12
-order by recs.member ASC, recs.recommender desc;
+select recommenders.member member, recommenders.recommender, members.firstname, members.surname
+	from recommenders inner join members on recommenders.recommender = members.memid
+	where recommenders.member = 22 or recommenders.member = 12
+order by recommenders.member ASC, recommenders.recommender desc;
 
 insert into members (memid, surname, firstname, address, zipcode, telephone, recommendedby, joindate) values (1, 'Jorgensen', 'Corie', '7 Dawn Drive', '11660000', '611-22-0684', null, '11/16/2021');
 insert into members (memid, surname, firstname, address, zipcode, telephone, recommendedby, joindate) values (2, 'Padly', 'Marylee', '79513 Nobel Junction', null, '602-72-5101', null, '12/8/2020');
