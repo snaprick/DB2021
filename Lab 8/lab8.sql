@@ -84,7 +84,7 @@ insert into people(id, name) values (1, 'Yerlan');
 update people set name = 'Yerla' where name = 'Yerlan';
 
 drop trigger calc_time on people;
--- B
+--2b
 create or replace FUNCTION age()
 returns trigger AS
     $$
@@ -99,7 +99,7 @@ create trigger calc_age before insert on people
 insert into people(id, name, date_of_birth)  values (11, 'Yerlan', '11-11-2002');
 
 drop trigger calc_age on people;
--- c
+-- 2c
 CREATE table product(
     id integer primary key,
     name varchar,
@@ -127,7 +127,7 @@ insert into product(id,name,price) values (3, 'cheese', 223);
 
 drop trigger calc_price on product;
 
--- d
+-- 2d
 create or replace function stop_del() returns trigger
     as $$
     begin
@@ -144,7 +144,7 @@ delete from product where id=1;
 select * from product;
 
 drop trigger del_changes on product;
--- e
+-- 2e
 
 create table test(
     id int primary key,
@@ -171,6 +171,9 @@ insert into test (id, password, number)
 values (1,'123456',2);
 
 drop trigger test1 on test;
+-- 3 task
+-- Procedures are basic PL SQL blocks to perform a specific action.Procedures will not return the value
+-- Functions are blocks used mainly to perform the computations.Functions must return the value.
 -- 4 task
 Create table employee(
     id int primary key,
@@ -181,7 +184,7 @@ Create table employee(
     workexperience int,
     discount int
 );
---a
+--4a
 CREATE or replace procedure salary1() as
 $$
     Begin
@@ -195,7 +198,7 @@ $$
 language 'plpgsql';
 
 
--- b
+-- 4b
 create or replace procedure sallary2() as
     $$
         BEGIN
