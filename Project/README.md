@@ -20,9 +20,9 @@ I got it like this.
 
 [DDL.sql] and [DML.sql]
 
-## All tables that I left for our database can be found in
+## All queries that I used to check the database can be found below
 
-[Table.sql]
+[Queries.sql]
 
 ## ERD can be found in
 
@@ -31,6 +31,6 @@ I got it like this.
 [Olzhas Group.pdf]: <https://github.com/snaprick/DB2021/blob/main/Project/Olzhas%20Group.pdf>
 [DDL.sql]:<https://github.com/snaprick/DB2021/blob/main/Project/DDL.sql>
 [DML.sql]:<https://github.com/snaprick/DB2021/blob/main/Project/DML.sql>
-[Table.sql]:<https://github.com/snaprick/DB2021/blob/main/Project/Table.sql>
+[Queries.sql]:<https://github.com/snaprick/DB2021/blob/main/Project/Queries.sql>
 [ERD]:<https://github.com/snaprick/DB2021/blob/main/Project/ERD%20Final.png>
 [Mockaroo]:<https://mockaroo.com>
