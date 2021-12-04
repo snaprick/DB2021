@@ -1,79 +1,130 @@
---4.1
+create table car_company(
+    name varchar(255) not null primary key,
+    foundation_date date not null
+);
 
-select date_part('month',sales.date) as Month, brand_name, count(*) as cnt
-        from sales inner join customer c on c.id = sales.customer_id inner join vehicles v on sales.vin = v.vin inner join models m on v.model_name = m.name
-        group by Month, brand_name
-        order by Month;
+create table brands(
+    name varchar(255) not null primary key,
+    comp_name varchar(255)  references car_company(name)
+);
 
-select to_char(sales.date, 'Month') as Month, brand_name, count(*) as cnt_male
-        from sales
-            inner join customer c on c.id = sales.customer_id
-            inner join vehicles v on sales.vin = v.vin
-            inner join models m on v.model_name = m.name
-            where gender = 'Male'
-            group by Month, brand_name
-            order by Month;
+create table models(
+    name varchar(255) not null primary key,
+    year int not null,
+    doors int not null,
+    convertible bool not null,
+    body_type varchar(255) not null,
+    brand_name varchar(255)  references brands(name)
+);
 
-select to_char(sales.date, 'Month') as Month, brand_name, count(*) as cnt_female
-        from sales
-                 inner join customer c on c.id = sales.customer_id
-                 inner join vehicles v on sales.vin = v.vin
-                 inner join models m on v.model_name = m.name
-        where gender = 'Female'
-        group by Month, brand_name
-        order by Month;
+create table options(
+    id int not null primary key ,
+    color varchar(255) not null,
+    engine varchar(255) not null,
+    transmission varchar(255) not null
+);
+create table suppliers(
+    name varchar(255) not null primary key,
+    city varchar(255) not null,
+    street varchar(255) not null,
+    zip int not null
+);
+create table parts(
+    id int not null primary key,
+    name varchar(255) not null,
+    date date not null,
+    suppliers_name varchar(255) references suppliers(name)
+);
 
-create or replace function trend(type varchar(255),brand varchar(255))
-returns table(
-    time2 varchar,
-    cnt int
-    )
-as $$
-    begin
-        return query select to_char(sales.date, type)::varchar as time2, count(*)::int as cnt
-        from sales inner join customer c on c.id = sales.customer_id inner join vehicles v on sales.vin = v.vin inner join models m on v.model_name = m.name
-        where m.brand_name = brand
-        group by time2
-        order by time2;
-    end;
-$$
-language plpgsql;
+create table factory(
+    id int not null primary key,
+    name varchar(255) references car_company(name)
+);
+create table assembly(
+    vin int not null primary key ,
+    transmission_id int references parts(id),
+    engine_id int references parts(id),
+    factory_id int references factory(id)
+);
 
-drop function trend;
-select * from trend('MM','Hyundai');
 
-select brand_name, sum(price)
-from sales inner join vehicles v on sales.vin = v.vin inner join models m on v.model_name = m.name
-group by brand_name;
 
---4.2
-select s.vin, first_name, last_name
-from customer c inner join sales s on c.id = s.customer_id inner join vehicles on vehicles.vin = s.vin where transmission_id in (
-        select id from parts
-        where name = 'Transmission' and suppliers_name = 'Getrag' and date>='1/1/2015' and date <= '12/12/2020'
-    );
---4.3
-select brand_name, sum(price)
-from sales inner join vehicles v on sales.vin = v.vin inner join models m on v.model_name = m.name
-group by brand_name
-order by sum(price) desc
-limit 2;
---4.4
-select brand_name, count(*)
-from sales inner join vehicles v on sales.vin = v.vin inner join models m on v.model_name = m.name
-group by brand_name
-order by count(*)desc
-limit 2;
---4.5
-SELECT date_part('month',sales.date) AS Month, count(*)
-from sales inner join vehicles v on sales.vin = v.vin inner join models m on v.model_name = m.name
-where convertible = true
-group by Month
-order by Month;
---4.6
-select name, date_part('days',avg(now()-i1.date)) as time
-from inventory_cars i1 inner join inventory i2 on i1.inventory_id = i2.id inner join dealers d on d.id = i2.dealer_id
-group by name
-order by time desc;
+create table company_suppliers(
+    name varchar(255) not null primary key,
+    comp_name varchar(255) references car_company(name)
+);
+
+create table vehicles(
+    VIN int not null primary key references assembly(vin),
+    day int not null,
+    month int not null,
+    year int not null,
+    price int not null,
+    option_id int  references options(id)
+);
+
+
+
+create table customer(
+    id int not null  primary key,
+    first_name varchar(255) not null,
+    last_name varchar(255) not null,
+    city varchar(255) not null,
+    street varchar(255) not null,
+    zip int not null,
+    gender varchar(255) not null,
+    annual_income int not null
+);
+
+create table customers_phones(
+    id int not null  primary key,
+    phone_number varchar(255) not null,
+    customer_id int  references customer(id)
+);
+
+create table dealers(
+    id int not null  primary key,
+    name varchar(255) not null,
+    city varchar(255) not null,
+    street varchar(255) not null,
+    zip int not null
+);
+
+create table dealers_phones(
+    id int not null  primary key,
+    phone_number varchar(255) not null,
+    dealer_id int  references dealers(id)
+);
+
+create table sales(
+    id int not null  primary key,
+    week int not null,
+    month int not null,
+    year int not null,
+    --brand_name varchar(255)  references brands(name),
+    --model_name varchar(255)   references models(name),
+    --color_id int  references options(id),
+    vin int  references vehicles(VIN),
+    dealer_id int  references dealers(id),
+    customer_id int references customer(id)
+);
+
+create table inventory(
+    id int not null  primary key,
+    dealer_id int  references dealers(id),
+    city varchar(255) not null,
+    street varchar(255) not null,
+    zip int not null,
+    capacity int not null
+);
+
+create table inventory_cars(
+    id int not null  primary key,
+    vin int  references vehicles(VIN),
+    inventory_id int  references inventory(id),
+    date date not null,
+    factory_id int references factory(id)
+);
+
 
 
