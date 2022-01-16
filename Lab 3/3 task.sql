@@ -58,3 +58,10 @@ where course_id in (
             where end_hr > 12)
         )
     );
+
+select name from instructor,teaches
+where instructor.id = teaches.id and course_id not in (
+        select distinct course_id
+        from student,takes
+        where grade = 'A' and student.id = takes.id
+    )
