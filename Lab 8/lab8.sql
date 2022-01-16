@@ -190,9 +190,9 @@ CREATE or replace procedure salary1() as
 $$
     begin
         update employee
-        set salary = salary+ (workexperience/2)*0.1*salary,
+        set salary = (workexperience/2)*1.1*salary,
             discount = (workexperience/2)*10 + employee.discount;
-         update employee set discount = (workexperience/5) + employee.discount;
+        update employee set discount = (workexperience/5) + employee.discount;
         commit;
     end;
     $$
