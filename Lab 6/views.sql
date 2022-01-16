@@ -2,19 +2,19 @@
 CREATE VIEW a AS
 SELECT date, count(c.id), avg(amount), sum(amount)
 FROM sell
-LEFT JOIN client c on c.id = sell.client_id
-GROUP BY date;
-
-SELECT * from a;
---DROP VIEW a;
---2b
-CREATE VIEW b as
+LEFT JCREATE VIEW b as
 SELECT date,sum
 FROM a
 ORDER BY sum DESC limit 5;
 
 SELECT * from b;
-DROP VIEW b;
+DROP VIEW b;OIN client c on c.id = sell.client_id
+GROUP BY date;
+
+SELECT * from a;
+--DROP VIEW a;
+--2b
+
 --2c
 CREATE VIEW c AS
     SELECT dealer.name as "dealer",COUNT(sell.id) as "number_of_salss",AVG(amount) as "average",SUM(amount) as "total"
