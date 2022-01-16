@@ -40,7 +40,7 @@ $$
 language plpgsql;
 
 drop function trend;
-select * from trend('MM','Hyundai');
+select * from trend('WW','Hyundai');
 
 select brand_name, sum(price)
 from sales inner join vehicles v on sales.vin = v.vin inner join models m on v.model_name = m.name
@@ -69,7 +69,7 @@ SELECT date_part('month',sales.date) AS Month, count(*)
 from sales inner join vehicles v on sales.vin = v.vin inner join models m on v.model_name = m.name
 where convertible = true
 group by Month
-order by Month;
+order by count(*) desc ;
 --4.6
 select name, date_part('days',avg(now()-i1.date)) as time
 from inventory_cars i1 inner join inventory i2 on i1.inventory_id = i2.id inner join dealers d on d.id = i2.dealer_id

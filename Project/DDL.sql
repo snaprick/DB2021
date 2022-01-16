@@ -5,7 +5,8 @@ create table car_company(
 
 create table brands(
     name varchar(255) not null primary key,
-    comp_name varchar(255)  references car_company(name)
+    comp_name varchar(255)  references car_company(name),
+    foundation_date date not null
 );
 
 create table models(
@@ -40,29 +41,22 @@ create table factory(
     id int not null primary key,
     name varchar(255) references car_company(name)
 );
-create table assembly(
-    vin int not null primary key ,
-    transmission_id int references parts(id),
-    engine_id int references parts(id),
-    factory_id int references factory(id)
-);
-
 
 
 create table company_suppliers(
-    name varchar(255) not null primary key,
+    name varchar(255) not null primary key references suppliers(name),
     comp_name varchar(255) references car_company(name)
 );
 
 create table vehicles(
-    VIN int not null primary key references assembly(vin),
-    day int not null,
-    month int not null,
-    year int not null,
-    price int not null,
-    option_id int  references options(id)
+    VIN varchar(255) not null primary key,
+    date date not null,
+    option_id int  references options(id),
+    model_name varchar(255) references models(name),
+    transmission_id int references parts(id),
+    engine_id int references parts(id),
+    factory_id int references factory(id)
 );
-
 
 
 create table customer(
@@ -98,15 +92,11 @@ create table dealers_phones(
 
 create table sales(
     id int not null  primary key,
-    week int not null,
-    month int not null,
-    year int not null,
-    --brand_name varchar(255)  references brands(name),
-    --model_name varchar(255)   references models(name),
-    --color_id int  references options(id),
-    vin int  references vehicles(VIN),
+    date date not null,
+    vin varchar(255)  references vehicles(VIN),
     dealer_id int  references dealers(id),
-    customer_id int references customer(id)
+    customer_id int references customer(id),
+    price int not null
 );
 
 create table inventory(
@@ -120,11 +110,9 @@ create table inventory(
 
 create table inventory_cars(
     id int not null  primary key,
-    vin int  references vehicles(VIN),
+    vin varchar(255) references vehicles(VIN),
     inventory_id int  references inventory(id),
     date date not null,
     factory_id int references factory(id)
 );
-
-
 
